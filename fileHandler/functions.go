@@ -1,10 +1,12 @@
 package fileHandler
 
 import (
-    "github.com/jwas-sw/GoLearning/v2/errorHandler"
+	"io/ioutil"
+	"os"
+    eh "github.com/jwas-sw/GoLearning/v2/errorHandler"
 )
 
-func saveToFile(outputFileName string, contentAsByte []byte) {
+func SaveToFile(outputFileName string, contentAsByte []byte) {
 	f, err := os.Create(outputFileName)
 	// close fo on exit and check for its returned error
 	defer func() {
@@ -12,13 +14,13 @@ func saveToFile(outputFileName string, contentAsByte []byte) {
 			panic(err)
 		}
 	}()
-	check(err)
+	eh.Check(err)
 	_, err2 := f.Write(contentAsByte)
-	check(err2)
+	eh.Check(err2)
 }
 
-func openFile(fileName string, c chan string) {
+func OpenFile(fileName string, c chan string) {
 	fi, err := ioutil.ReadFile(fileName)
-	check(err)
+	eh.Check(err)
 	c <- string(fi)
 }

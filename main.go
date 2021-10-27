@@ -1,36 +1,28 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"github.com/eiannone/keyboard"
-	"io"
-	"io/ioutil"
-	"net/http"
 	"os"
-	"strings"
-    "github.com/jwas-sw/GoLearning/v2/errorHandler"
-    "github.com/jwas-sw/GoLearning/v2/fileHandler"
+	"github.com/eiannone/keyboard"
+	eh "github.com/jwas-sw/GoLearning/v2/errorHandler"
+	fh "github.com/jwas-sw/GoLearning/v2/fileHandler"
+	fp "github.com/jwas-sw/GoLearning/v2/fileProcessor"
 )
 
 func main() {
-    for {
-        buildMenu()
-    }
+	for {
+		buildMenu()
+	}
 
-	//todo
-
+	// TODO
 	//select top 50 most used words and save them into jsons (!!!)
-
-	// modules? packages?
 	// unit tests
-	// error handling?
 }
 
 func buildMenu() {
 	fmt.Println("Select mode: Results merge mode[2] or Text analysis mode[1]. Press 'X' to exit ")
 	char, _, err := keyboard.GetSingleKey()
-	check(err)
+	eh.Check(err)
 	fmt.Printf("You pressed: %q\r\n", char)
 	switch char {
 	case '1':
@@ -38,20 +30,20 @@ func buildMenu() {
 		byteArrayChannel1 := make(chan []byte)
 		byteArrayChannel2 := make(chan []byte)
 
-		go downloadFromUrl("https://pastebin.com/raw/v0Sm2sfn", byteArrayChannel1)
-		go downloadFromUrl("https://pastebin.com/raw/fysHJ7YX", byteArrayChannel2)
+		go fp.DownloadFromUrl("https://pastebin.com/raw/v0Sm2sfn", byteArrayChannel1)
+		go fp.DownloadFromUrl("https://pastebin.com/raw/fysHJ7YX", byteArrayChannel2)
 
-		saveToFile("output1.txt", <-byteArrayChannel1)
-		saveToFile("output2.txt", <-byteArrayChannel2)
+		fh.SaveToFile("output1.txt", <-byteArrayChannel1)
+		fh.SaveToFile("output2.txt", <-byteArrayChannel2)
 	case '2':
 		fmt.Println("Results merge mode mode selected.")
 
-		createJsonFromFile("output1.txt", "output1.json")
-		createJsonFromFile("output2.txt", "output2.json")
+		fp.CreateJsonFromFile("output1.txt", "output1.json")
+		fp.CreateJsonFromFile("output2.txt", "output2.json")
 
-		mergedFilesMap := mergeFilesIntoMap("output1.txt", "output2.txt")
-		jsonByteMap := createJsonByteFromMap(mergedFilesMap)
-		saveToFile("output3.json", jsonByteMap)
+		mergedFilesMap := fp.MergeFilesIntoMap("output1.txt", "output2.txt")
+		jsonByteMap := fp.CreateJsonByteFromMap(mergedFilesMap)
+		fh.SaveToFile("output3.json", jsonByteMap)
 
 	default:
 		fmt.Println("Unsuported key pressed. Killing...")
