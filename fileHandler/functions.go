@@ -3,6 +3,7 @@ package fileHandler
 import (
 	"io/ioutil"
 	"os"
+    "fmt"
     eh "github.com/jwas-sw/GoLearning/v2/errorHandler"
 )
 
@@ -23,4 +24,22 @@ func OpenFile(fileName string, c chan string) {
 	fi, err := ioutil.ReadFile(fileName)
 	eh.Check(err)
 	c <- string(fi)
+}
+
+func DeleteCreatedFiles(){
+    RemoveFile("output1.txt")
+    RemoveFile("output2.txt")
+    RemoveFile("output1.json")
+    RemoveFile("output2.json")
+    RemoveFile("output3.json")
+}
+
+func RemoveFile(fileName string){
+    err := os.Remove(fileName)
+
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
+       fmt.Println("File successfully deleted - ", fileName)
 }

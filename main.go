@@ -47,6 +47,8 @@ func buildMenu() {
         fp.PrintFileStatistics("output1.json")
         fp.PrintFileStatistics("output2.json")
         fp.PrintFileStatistics("output3.json")
+    case '4':
+        fh.DeleteCreatedFiles()
 	default:
 		fmt.Println("Unsuported key pressed. Killing...")
 		os.Exit(0)
