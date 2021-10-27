@@ -7,9 +7,9 @@ type StringInt struct {
 
 // Find takes a slice and looks for an element in it. If found it will
 // return it's key, otherwise it will return -1 and a bool of false.
-func Find(slice []StringInt, el StringInt) (int, bool) {
+func Find(slice []StringInt, elementToFind StringInt) (int, bool) {
 	for i, item := range slice {
-		if item.Word == el.Word {
+		if item.Word == elementToFind.Word {
 			return i, true
 		}
 	}

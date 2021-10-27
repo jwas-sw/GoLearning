@@ -18,19 +18,19 @@ func PrintFileStatistics(fileName string) {
 }
 
 func CreateJson(wordCount []StringInt) []byte {
-	jsonStr, err := json.Marshal(wordCount)
+	jsonByteArray, err := json.Marshal(wordCount)
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
 	} else {
 		//fmt.Println(string(jsonStr))
 	}
-	return jsonStr
+	return jsonByteArray
 }
 
 func CreateFileStatistics(fileName string) []StringInt {
 	c := make(chan string)
 	go fh.OpenFile(fileName, c)
-	m := WordCount(c)
+	m := WordCount(<-c)
 	return m
 }
 
@@ -76,9 +76,9 @@ func DownloadFromUrl(url string, c chan []byte) {
 	c <- result
 }
 
-func WordCount(c chan string) []StringInt {
+func WordCount(c string) []StringInt {
 	someMap := make(map[string]int)
-	for _, j := range strings.Fields(<-c) {
+	for _, j := range strings.Fields(c) {
 		someMap[j]++
 	}
 
