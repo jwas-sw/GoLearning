@@ -5,22 +5,30 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"sort"
 	"strings"
-    eh "github.com/jwas-sw/GoLearning/v2/errorHandler"
-    fh "github.com/jwas-sw/GoLearning/v2/fileHandler"
+
+	eh "github.com/jwas-sw/GoLearning/v2/errorHandler"
+	fh "github.com/jwas-sw/GoLearning/v2/fileHandler"
 )
 
-func CreateJsonByteFromMap(someMap map[string]int) []byte {
-	jsonStr, err := json.Marshal(someMap)
+func PrintFileStatistics(fileName string) {
+	fmt.Println("FileName - ", fileName)
+	fmt.Println(CreateFileStatistics(fileName))
+	fmt.Println()
+}
+
+func CreateJson(wordCount []StringInt) []byte {
+	jsonStr, err := json.Marshal(wordCount)
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
 	} else {
-		fmt.Println(string(jsonStr))
+		//fmt.Println(string(jsonStr))
 	}
 	return jsonStr
 }
 
-func CreateMapFromFile(fileName string) (x map[string]int) {
+func CreateFileStatistics(fileName string) []StringInt {
 	c := make(chan string)
 	go fh.OpenFile(fileName, c)
 	m := WordCount(c)
@@ -28,17 +36,31 @@ func CreateMapFromFile(fileName string) (x map[string]int) {
 }
 
 func CreateJsonFromFile(inputFileName, outputFileName string) {
-	m := CreateMapFromFile(inputFileName)
-	jsonByteMap := CreateJsonByteFromMap(m)
+	m := CreateFileStatistics(inputFileName)
+	jsonByteMap := CreateJson(m)
 	fh.SaveToFile(outputFileName, jsonByteMap)
 }
 
-func MergeFilesIntoMap(filename1, fileName2 string) (x map[string]int) {
+func MergeFilesIntoMap(filename1, fileName2 string) []StringInt {
 	c := make(chan string)
+    c2 := make(chan string)
+
 	go fh.OpenFile(filename1, c)
-	go fh.OpenFile(fileName2, c)
-	m := WordCount(c)
-	return m
+	go fh.OpenFile(fileName2, c2)
+
+    data1 := []StringInt{}
+    json.Unmarshal([]byte(<-c), &data1)
+
+    data2 := []StringInt{}
+    json.Unmarshal([]byte(<-c2), &data2)
+
+    results := []StringInt{}
+    results = FindAndUpdate(data1, results)
+    results = FindAndUpdate(data2, results)
+
+    finalResult := SortStringIntSlice(results)
+
+	return finalResult
 }
 
 func DownloadFromUrl(url string, c chan []byte) {
@@ -55,11 +77,28 @@ func DownloadFromUrl(url string, c chan []byte) {
 	c <- result
 }
 
-func WordCount(c chan string) (x map[string]int) {
-	x = make(map[string]int)
+func WordCount(c chan string) []StringInt {
+	someMap := make(map[string]int)
 	for _, j := range strings.Fields(<-c) {
-		x[j]++
+		someMap[j]++
 	}
 
-	return
+	var results []StringInt
+	for key, element := range someMap {
+		results = append(results, StringInt{Word: key, Count: element})
+	}
+
+    return SortStringIntSlice(results)
+}
+
+func SortStringIntSlice(results []StringInt) []StringInt{
+	sort.Slice(results, func(i, j int) bool {
+		return results[i].Count > results[j].Count
+	})
+
+	if len(results) > 50 {
+		results = results[0:49]
+	}
+
+	return results
 }

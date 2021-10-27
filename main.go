@@ -15,7 +15,6 @@ func main() {
 	}
 
 	// TODO
-	//select top 50 most used words and save them into jsons (!!!)
 	// unit tests
 }
 
@@ -35,16 +34,19 @@ func buildMenu() {
 
 		fh.SaveToFile("output1.txt", <-byteArrayChannel1)
 		fh.SaveToFile("output2.txt", <-byteArrayChannel2)
+
+        fp.CreateJsonFromFile("output1.txt", "output1.json")
+		fp.CreateJsonFromFile("output2.txt", "output2.json")
 	case '2':
 		fmt.Println("Results merge mode mode selected.")
-
-		fp.CreateJsonFromFile("output1.txt", "output1.json")
-		fp.CreateJsonFromFile("output2.txt", "output2.json")
-
-		mergedFilesMap := fp.MergeFilesIntoMap("output1.txt", "output2.txt")
-		jsonByteMap := fp.CreateJsonByteFromMap(mergedFilesMap)
+		mergedFilesMap := fp.MergeFilesIntoMap("output1.json", "output2.json")
+		jsonByteMap := fp.CreateJson(mergedFilesMap)
 		fh.SaveToFile("output3.json", jsonByteMap)
-
+    case '3':
+        fmt.Println("Printing outputs mode...")
+        fp.PrintFileStatistics("output1.json")
+        fp.PrintFileStatistics("output2.json")
+        fp.PrintFileStatistics("output3.json")
 	default:
 		fmt.Println("Unsuported key pressed. Killing...")
 		os.Exit(0)
