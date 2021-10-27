@@ -13,13 +13,14 @@ func main() {
 	for {
 		buildMenu()
 	}
-
-	// TODO
-	// unit tests
 }
 
 func buildMenu() {
-	fmt.Println("Select mode: Results merge mode[2] or Text analysis mode[1]. Press 'X' to exit ")
+    fmt.Println("What I can do:")
+    fmt.Println("1 - Text analysis mode")
+    fmt.Println("2 - Merge results")
+    fmt.Println("3 - Print all result files")
+	fmt.Println("4 - Remove all created files")
 	char, _, err := keyboard.GetSingleKey()
 	eh.Check(err)
 	fmt.Printf("You pressed: %q\r\n", char)
@@ -37,18 +38,22 @@ func buildMenu() {
 
         fp.CreateJsonFromFile("output1.txt", "output1.json")
 		fp.CreateJsonFromFile("output2.txt", "output2.json")
+        fmt.Println("Done.")
 	case '2':
 		fmt.Println("Results merge mode mode selected.")
 		mergedFilesMap := fp.MergeFilesIntoMap("output1.json", "output2.json")
 		jsonByteMap := fp.CreateJson(mergedFilesMap)
 		fh.SaveToFile("output3.json", jsonByteMap)
+        fmt.Println("Done.")
     case '3':
         fmt.Println("Printing outputs mode...")
         fp.PrintFileStatistics("output1.json")
         fp.PrintFileStatistics("output2.json")
         fp.PrintFileStatistics("output3.json")
+        fmt.Println("Done.")
     case '4':
         fh.DeleteCreatedFiles()
+        fmt.Println("Done.")
 	default:
 		fmt.Println("Unsuported key pressed. Killing...")
 		os.Exit(0)

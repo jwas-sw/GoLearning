@@ -5,7 +5,25 @@ import (
 	cmp "github.com/google/go-cmp/cmp"
 )
 
-func TestFund(t *testing.T){
+func TestFindAndUpdate(t *testing.T) {
+    searchIn := []StringInt{}
+    data := []StringInt{}
+	data = append(data, StringInt{Word: "a", Count: 3})
+	data = append(data, StringInt{Word: "b", Count: 2})
+	data = append(data, StringInt{Word: "a", Count: 1})
+
+    result := FindAndUpdate(data, searchIn)
+    i, exist := Find(result, StringInt{Word: "a", Count: 3} )
+
+    if !exist || result[i].Count != 4 {
+		t.Log("Eror ExpectedResult is diffrent!")
+        t.Log("expected exist true, got", exist)
+        t.Log("expected result[i].Count 4, got", 4)
+		t.Fail()
+	}
+}
+
+func TestFind(t *testing.T){
 	expected := []StringInt{}
 	expected = append(expected, StringInt{Word: "a", Count: 3})
 	expected = append(expected, StringInt{Word: "b", Count: 2})
